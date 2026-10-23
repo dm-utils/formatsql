@@ -44,7 +44,7 @@ copy /y "src\help.txt" "%DST%\help.txt"
 if errorlevel 1 ( echo Help file copy failed & exit /b 1 )
 
 :: -- Restart Notepad++ --
-start "" "C:\Program Files\Notepad++\notepad++.exe"
+if exist "C:\Program Files\Notepad++\notepad++.exe" ( start "" "C:\Program Files\Notepad++\notepad++.exe" )
 
 :: -- Build the standalone CLI (same engine, no NPP/WinAPI-dialog dependency) --
 mkdir build\cli 2>nul

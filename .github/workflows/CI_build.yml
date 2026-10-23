@@ -1,0 +1,44 @@
+name: CI_build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        build_configuration: [Release]
+        build_platform: [x64]
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v7
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v3
+
+    - name: MSBuild of plugin dll
+      working-directory: .\
+      run: .\build.cmd
+
+    - uses: olegtarasov/get-tag@v2.1.4
+      id: tagName
+      
+    - name: zip artifacts for x64
+      if: matrix.build_platform == 'x64' && matrix.build_configuration == 'Release'
+      run: 7z a FormatSQL_${{ steps.tagName.outputs.tag }}_${{ matrix.build_platform }}.zip .\build\FormatSQL.dll
+
+    - name: Archive artifacts for ${{ matrix.build_platform }}
+      if: matrix.build_configuration == 'Release'
+      uses: actions/upload-artifact@v7
+      with:
+          name: FormatSQL_${{ steps.tagName.outputs.tag }}_${{ matrix.build_platform }}.zip
+          path: FormatSQL_${{ steps.tagName.outputs.tag }}_${{ matrix.build_platform }}.zip
+
+    - name: Create release on tagging
+      uses: softprops/action-gh-release@v3
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+          files: FormatSQL_${{ steps.tagName.outputs.tag }}_${{ matrix.build_platform }}.zip

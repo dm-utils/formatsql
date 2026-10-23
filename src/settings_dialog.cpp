@@ -121,7 +121,9 @@ void save_settings() {
     ws(L"FQDN", L"Database", to_wide(g_settings.fqdn_db).c_str());
     ws(L"FQDN", L"Schema",   to_wide(g_settings.fqdn_schema).c_str());
 
-    ws(L"General",   L"FormatOnSave",   bool_str(g_settings.format_on_save));
+    // Format on Save is session-only (off after every restart); drop the key
+    // that versions before 1.3.2.17 persisted.
+    ws(L"General",   L"FormatOnSave",   nullptr);
     ws(L"Columns",   L"AlignAliases",   bool_str(g_settings.align_aliases));
     ws(L"Structure", L"AlignCaseWhen",  bool_str(g_settings.align_case_when));
     wi(L"Spacing",   L"InListWrap",     g_settings.in_list_wrap);
@@ -195,7 +197,7 @@ void load_settings() {
 
     g_settings.strip_inner_outer = GetPrivateProfileIntW(L"Joins", L"StripInnerOuter", 1, f) != 0;
 
-    g_settings.format_on_save  = GetPrivateProfileIntW(L"General",   L"FormatOnSave",  0, f) != 0;
+    g_settings.format_on_save  = false;  // session-only, never read back from the .ini
     g_settings.align_aliases   = GetPrivateProfileIntW(L"Columns",   L"AlignAliases",  0, f) != 0;
     g_settings.align_case_when = GetPrivateProfileIntW(L"Structure", L"AlignCaseWhen", 0, f) != 0;
     g_settings.in_list_wrap    = (int)GetPrivateProfileIntW(L"Spacing", L"InListWrap", 0, f);

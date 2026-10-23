@@ -14,7 +14,7 @@ to try the formatter in your browser.
 - **Format SQL** (`Ctrl+Alt+Shift+F`) — auto-format with proper spacing and layout
 - **Minify SQL** — remove all unnecessary whitespace
 - **Format and Copy** — format and copy the result to the clipboard
-- **Format on Save** — auto-format the document on every save
+- **Format on Save** — auto-format `.sql` files (or files with language SQL) on every save; off again after a Notepad++ restart
 - **Paste List** — paste clipboard content (Excel columns/rows) as a quoted, comma-separated SQL list
 - **Number Format** — convert numbers between EN, NL and FR/BE decimal/thousands-separator conventions
 - **Quotes** — convert between single quotes, double quotes and backticks

@@ -53,6 +53,10 @@ enum {
 enum {
     NPPM_GETCURRENTSCINTILLA = 2028,
     NPPM_DOOPEN              = 2101, // NPPMSG (2024) + 77
+    NPPM_GETFULLPATHFROMBUFFERID = 2082, // NPPMSG + 58
+    NPPM_GETCURRENTBUFFERID  = 2084, // NPPMSG + 60
+    NPPM_GETBUFFERLANGTYPE   = 2088, // NPPMSG + 64
+    L_SQL                    = 17,
     NPPN_READY               = 1001,
     NPPN_FILEBEFORESAVE      = 1007,
     NPPN_FILESAVED           = 1008,
@@ -180,8 +184,39 @@ static void set_format_on_save_checkmark() {
     CheckMenuItem(hBar, id_off, MF_BYCOMMAND | (!on ? MF_CHECKED : MF_UNCHECKED));
 }
 
-static void cmd_fos_on()  { g_settings.format_on_save = true;  save_settings(); set_format_on_save_checkmark(); }
-static void cmd_fos_off() { g_settings.format_on_save = false; save_settings(); set_format_on_save_checkmark(); }
+// Format on Save is deliberately session-only: it is never written to the
+// .ini, so it is off again after every Notepad++ restart.
+static void cmd_fos_on() {
+    if (!g_settings.format_on_save &&
+        MessageBoxW(g_npp._nppHandle,
+            L"Format on Save reformats a file every time you save it.\n\n"
+            L"Only files with the extension .sql, or with the language set to SQL, "
+            L"are formatted. All other files are left untouched.\n\n"
+            L"This option switches itself off again when Notepad++ restarts.\n\n"
+            L"Turn Format on Save on?",
+            L"Datamodder SQL Formatter - Format on Save",
+            MB_OKCANCEL | MB_ICONWARNING | MB_DEFBUTTON2) != IDOK) {
+        set_format_on_save_checkmark();
+        return;
+    }
+    g_settings.format_on_save = true;
+    set_format_on_save_checkmark();
+}
+static void cmd_fos_off() { g_settings.format_on_save = false; set_format_on_save_checkmark(); }
+
+// Only the buffer being saved, and only when it is SQL: Save All and saving a
+// .json/.py/... file must never be run through the formatter.
+static bool is_sql_buffer(UINT_PTR buf) {
+    if ((int)SendMessage(g_npp._nppHandle, NPPM_GETBUFFERLANGTYPE, (WPARAM)buf, 0) == L_SQL)
+        return true;
+    LRESULT n = SendMessage(g_npp._nppHandle, NPPM_GETFULLPATHFROMBUFFERID, (WPARAM)buf, 0);
+    if (n <= 0) return false;
+    std::wstring path((size_t)n + 1, L'\0');
+    SendMessage(g_npp._nppHandle, NPPM_GETFULLPATHFROMBUFFERID, (WPARAM)buf, (LPARAM)&path[0]);
+    path.resize((size_t)n);
+    const wchar_t* dot = wcsrchr(path.c_str(), L'.');
+    return dot && _wcsicmp(dot, L".sql") == 0;
+}
 
 // ─── Strip comments ───────────────────────────────────────────────────────────
 
@@ -760,6 +795,9 @@ static void try_build_menu() {
 __declspec(dllexport) void beNotified(SCNotification* n) {
     try_build_menu();
     if ((n->code == NPPN_FILEBEFORESAVE || n->code == NPPN_FILESAVED) && g_settings.format_on_save) {
+        UINT_PTR saved = (UINT_PTR)n->idFrom;
+        UINT_PTR current = (UINT_PTR)SendMessage(g_npp._nppHandle, NPPM_GETCURRENTBUFFERID, 0, 0);
+        if (saved != current || !is_sql_buffer(saved)) return;
         DWORD now = GetTickCount();
         if (now - g_format_save_tick > 1000) {
             g_format_save_tick = now;

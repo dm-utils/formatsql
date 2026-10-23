@@ -74,7 +74,10 @@ clipboard, leaving the document itself untouched.
 
 Format on Save (On / Off)
 --------------------------
-When on, automatically runs Format SQL every time you save the document.
+When on, automatically runs Format SQL every time you save a SQL file: a
+file with the extension .sql, or with the language set to SQL. Other files
+are never touched. Turning it on asks for confirmation, and it switches
+itself off again when Notepad++ restarts.
 
 
 PASTE LIST

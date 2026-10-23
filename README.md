@@ -2,6 +2,11 @@
 
 A Notepad++ plugin for formatting, minifying and converting SQL.
 
+**Website:** [datamodder.com/en/utils/sql-formatter](https://datamodder.com/en/utils/sql-formatter)
+— features, [settings with examples](https://datamodder.com/en/utils/sql-formatter/settings)
+and an [online playground](https://datamodder.com/en/utils/sql-formatter/playground)
+to try the formatter in your browser.
+
 **64-bit Notepad++ only.** 32-bit is not supported.
 
 ## Features

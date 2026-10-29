@@ -1,9 +1,9 @@
 #pragma once
 
 // ─── version (single source of truth — bump here only) ──────────────────────
-#define FORMATSQL_VERSION       "1.3.2.17"
-#define FORMATSQL_VERSION_W     L"1.3.2.17"
-#define FORMATSQL_VERSION_COMMA 1,3,2,17
+#define FORMATSQL_VERSION       "1.3.2.18"
+#define FORMATSQL_VERSION_W     L"1.3.2.18"
+#define FORMATSQL_VERSION_COMMA 1,3,2,18
 
 // ─── dialog IDs ───────────────────────────────────────────────────────────────
 #define IDD_SETTINGS        101

@@ -7,7 +7,7 @@ A Notepad++ plugin for formatting, minifying and converting SQL.
 and an [online playground](https://datamodder.com/en/utils/sql-formatter/playground)
 to try the formatter in your browser.
 
-**64-bit Notepad++ only.** 32-bit is not supported.
+For 64-bit, 32-bit and ARM64 Notepad++.
 
 ## Features
 
@@ -43,6 +43,19 @@ build.cmd
 
 This compiles the plugin, closes Notepad++, deploys the DLL and help file to
 `C:\Program Files\Notepad++\plugins\FormatSQL`, and restarts Notepad++.
+
+## Release
+
+```
+release.cmd
+```
+
+Builds `FormatSQL.dll` and zips it with `help.txt` into
+`release_staging\FormatSQL.zip` (x64) or `FormatSQL_<arch>.zip`, printing the
+SHA-256 the plugin lists need. By default only x64; `release.cmd x64 x86 arm64`
+(or the commented line in the script) also builds the Win32 and ARM64
+versions. ARM64 needs the "MSVC C++ ARM64/ARM64EC build tools" component of
+Visual Studio. `test.cmd x86` runs the tests as a 32-bit program.
 
 ## License
 

@@ -215,7 +215,7 @@ protected during formatting; {% ... %} lines are left unchanged.
 
 REQUIREMENTS
 ============
-64-bit Notepad++ only. 32-bit is not supported.
+Notepad++ 8.3 or later: 64-bit, 32-bit or ARM64.
 
 
 Plugin page (usage tips, screenshots): https://datamodder.com/utils/sql-formatter

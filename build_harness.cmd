@@ -10,7 +10,10 @@ for /f "usebackq tokens=*" %%i in (
 ) do set VS_PATH=%%i
 if "%VS_PATH%"=="" ( echo VS C++ tools not found & exit /b 1 )
 
-call "%VS_PATH%\VC\Auxiliary\Build\vcvars64.bat" >nul 2>&1
+:: "build_harness.cmd x86" builds a 32-bit harness, to run the tests as the Win32 plugin would.
+set "VCARG=x64"
+if /i "%1"=="x86" set "VCARG=x64_x86"
+call "%VS_PATH%\VC\Auxiliary\Build\vcvarsall.bat" %VCARG% >nul 2>&1
 
 mkdir build\harness 2>nul
 
